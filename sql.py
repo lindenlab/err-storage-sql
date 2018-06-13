@@ -15,7 +15,6 @@ log = logging.getLogger('errbot.storage.sql')
 
 DATA_URL_ENTRY = 'data_url'
 
-
 class KV(object):
     """This is a basic key/value. Pickling in JSON."""
     def __init__(self, key: str, value: Any):
@@ -74,6 +73,7 @@ class SQLStorage(StorageBase):
 
     def close(self) -> None:
         self.session.commit()
+        log.debug("Closed SQLStorage")
 
 
 class SQLPlugin(StoragePluginBase):
@@ -107,6 +107,8 @@ class SQLPlugin(StoragePluginBase):
         self._metadata = MetaData()
         self._sessionmaker = sessionmaker()
         self._sessionmaker.configure(bind=self._engine)
+        log.debug("Initialized SQLPlugin")
+
 
     def open(self, namespace: str) -> StorageBase:
 
@@ -127,4 +129,5 @@ class SQLPlugin(StoragePluginBase):
         self._metadata.create_all(self._engine)
 
         # create an autonomous session for it.
+        log.debug("Opened SQLPlugin")
         return SQLStorage(self._sessionmaker(), NewKV)
